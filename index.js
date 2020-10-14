@@ -26,7 +26,8 @@ function lineBot(req, res) {
   for (let i = 0, l = events.length; i < l; i++) {
     const ev = events[i];
     promises.push(
-      echoman(ev)
+      // echoman(ev)
+      handleEvent(ev)
     );
   }
   Promise.all(promises).then(console.log("pass"));
@@ -39,4 +40,22 @@ async function echoman(ev) {
     type: "text",
     text: `${pro.displayName}さん、今「${ev.message.text}」って言いました？`
   })
+}
+
+async function handleEvent(ev){
+  if(ev.type !== 'message' || ev.message.type !== 'text'){
+    return Promise.resolve(null);
+  }
+
+  let replyText = '';
+  if(ev.message.text === 'こんにちは'){
+    replyText = 'こんばんはの時間ですよ';
+  }else{
+    replyText = 'うざ';
+  }
+
+  return client.replyMessage(ev.replyToken,{
+    type: 'text',
+    text: replyText
+  });
 }
