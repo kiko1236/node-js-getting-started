@@ -2,11 +2,15 @@ const express = require('express');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const line = require("@line/bot-sdk"); //追加
+const { promiseImpl } = require('ejs');
+const { promises } = require('fs');
 
 const config = {
   channelAccessToken: process.env.ACCESS_TOKEN,
   channelSecret: process.env.SECRET_KEY
 };
+
+const client = new line.Client(config);
 
 express()
   .use(express.static(path.join(__dirname, 'public')))
@@ -20,5 +24,21 @@ express()
 
   function lineBot(req,res){
     res.status(200).end();
-    console.log("pass");
+    const events = req.body.events;
+    const promises = [];
+    for(let i = 0,l = events.length; i < l; i++){
+      const ev = events[i];
+      promises.push(
+        echoman(env)
+      );
+    }
+    Promise.all(promises).then(console.log("pass"));
+  }
+
+  async function echoman(ev){
+    const pro = await client.getProfile(ev.source.userId);
+    return client.replyMessage(ev.replyToken,{
+      type: "text",
+      text: `${pro.displayName}さん、今｢${ev.message.text}」って言いました？`
+    })
   }
