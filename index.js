@@ -26,7 +26,7 @@ function lineBot(req, res) {
   for (let i = 0, l = events.length; i < l; i++) {
     const ev = events[i];
     promises.push(
-      // echoman(ev)
+      echoman(ev),
       handleEvent(ev)
     );
   }
